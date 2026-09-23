@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Serralleria Les Tries — Reparacions</title>
+<meta name="description" content="Sistema de gestió d'ordres de reparació">
+<meta name="theme-color" content="#1a1a2e">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Les Tries">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+:root{
+  --bg:#f8f7f4;--surface:#fff;--surface2:#f2f0ec;--border:#e0ddd6;
+  --text:#1a1917;--text2:#6b6760;--text3:#a09d97;
+  --accent:#1a1a2e;--accent-light:#eeeef5;
+  --green:#1a7a4a;--green-bg:#e8f5ee;
+  --amber:#8a5a00;--amber-bg:#fef4e0;
+  --blue:#1a4a7a;--blue-bg:#e8f0f8;
+  --red:#7a1a1a;--red-bg:#f5e8e8;
+  --gray-bg:#f0eee8;
+  --radius:10px;--radius-lg:16px;
+  --shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#111118;--surface:#1c1c26;--surface2:#25252f;--border:#32323e;
+  --text:#f0eff8;--text2:#9b9aaa;--text3:#5c5b6a;
+  --accent:#7b7be8;--accent-light:#1e1e2e;
+  --green:#4ab87a;--green-bg:#0e2a1a;--amber:#d4a030;--amber-bg:#2a1e08;
+  --blue:#6aa0d8;--blue-bg:#0e1e2e;--red:#d87070;--red-bg:#2a0e0e;
+  --gray-bg:#202028;
+}}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100%;font-size:16px;line-height:1.5}
+.app{display:flex;flex-direction:column;min-height:100vh;max-width:640px;margin:0 auto}
+.topbar{background:var(--accent);color:#fff;padding:16px 20px 14px;position:sticky;top:0;z-index:10}
+.topbar-row{display:flex;align-items:center;justify-content:space-between}
+.topbar h1{font-size:18px;font-weight:600;letter-spacing:-0.3px}
+.topbar .sub{font-size:12px;opacity:0.65;margin-top:1px}
+.sync-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-left:6px;vertical-align:middle}
+.tab-row{display:flex;gap:4px;margin-top:12px}
+.tab{flex:1;padding:7px 4px;font-size:13px;font-weight:500;border:none;background:transparent;color:rgba(255,255,255,0.55);border-radius:8px;cursor:pointer;transition:background 0.15s,color 0.15s}
+.tab.active{background:rgba(255,255,255,0.15);color:#fff}
+.content{flex:1;padding:16px}
+.panel{display:none}.panel.active{display:block}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
+.field{margin-bottom:14px}
+label{display:block;font-size:13px;font-weight:500;color:var(--text2);margin-bottom:5px}
+input,select,textarea{width:100%;padding:10px 12px;font-size:15px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);outline:none;transition:border 0.15s;font-family:inherit;-webkit-appearance:none;appearance:none}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);background:var(--surface)}
+textarea{resize:vertical;min-height:80px;line-height:1.5}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:400px){.grid2{grid-template-columns:1fr}}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 18px;border-radius:var(--radius);font-size:15px;font-weight:500;cursor:pointer;border:none;transition:opacity 0.15s,transform 0.1s;font-family:inherit}
+.btn:active{transform:scale(0.97)}
+.btn-primary{background:var(--accent);color:#fff;width:100%;margin-top:4px}
+.btn-primary:active{opacity:0.85}
+.btn-sm{padding:7px 12px;font-size:13px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;font-family:inherit}
+.btn-sm:hover{background:var(--surface2)}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text2);padding:10px 14px;font-size:14px;border-radius:var(--radius);cursor:pointer;font-family:inherit}
+.btn-row{display:flex;gap:8px;margin-top:4px}
+.btn-row .btn-primary{flex:1}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:99px;letter-spacing:0.2px}
+.s-pendiente{background:var(--amber-bg);color:var(--amber)}
+.s-proceso{background:var(--blue-bg);color:var(--blue)}
+.s-piezas{background:#fef0e0;color:#8a4a00}
+.s-listo{background:var(--green-bg);color:var(--green)}
+.s-entregado{background:var(--gray-bg);color:var(--text2)}
+.s-cancelado{background:var(--red-bg);color:var(--red)}
+.s-finalitzat{background:#3a3a3a;color:#f0f0f0}
+.order-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow)}
+.order-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:8px}
+.order-num{font-size:24px;font-weight:700;color:var(--accent);line-height:1;min-width:44px}
+.order-main{flex:1;min-width:0}
+.order-name{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.order-desc{font-size:13px;color:var(--text2);margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.order-meta{display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:1px solid var(--border);gap:8px}
+.order-date{font-size:12px;color:var(--text3)}
+.order-cost{font-size:14px;font-weight:600}
+.order-btns{display:flex;gap:6px;margin-top:10px}
+.order-btns .btn-sm{flex:1;text-align:center}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 18px;border-radius:99px;font-size:14px;font-weight:500;opacity:0;pointer-events:none;transition:opacity 0.2s;white-space:nowrap;z-index:100}
+.toast.show{opacity:1}
+.empty{text-align:center;padding:48px 16px;color:var(--text3)}
+.empty svg{margin-bottom:12px;opacity:0.4}
+.empty p{font-size:14px}
+.filter-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;scrollbar-width:none}
+.filter-row::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;padding:6px 14px;border-radius:99px;font-size:13px;font-weight:500;border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;transition:background 0.12s,color 0.12s}
+.chip.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.msg{font-size:14px;padding:10px 14px;border-radius:var(--radius);margin-top:10px;display:none}
+.msg.ok{background:var(--green-bg);color:var(--green)}
+.msg.err{background:var(--red-bg);color:var(--red)}
+.install-banner{background:var(--accent-light);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:13px}
+.install-banner button{margin-left:auto;flex-shrink:0;background:var(--accent);color:#fff;border:none;padding:7px 14px;border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:500}
+@media print{.no-print,.topbar,.toast{display:none!important}body{background:#fff}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar no-print">
+    <div class="topbar-row">
+      <div>
+        <h1>Serralleria Les Tries <span class="sync-dot" id="sync-dot" style="background:#d4a030"></span></h1>
+        <div class="sub" id="sync-label">Connectant...</div>
+      </div>
+      <div style="text-align:right">
+        <div id="topbar-count" style="font-size:22px;font-weight:700;color:#fff;line-height:1">0</div>
+        <div style="font-size:11px;opacity:0.6;margin-top:1px">ordres</div>
+      </div>
+    </div>
+    <div class="tab-row">
+      <button class="tab active" onclick="showTab('nova')">+ Nova</button>
+      <button class="tab" onclick="showTab('registre')">Registre</button>
+      <button class="tab" onclick="showTab('resum')">Resum</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <div id="panel-nova" class="panel active">
+      <div id="install-banner" class="install-banner" style="display:none">
+        <span>📲 Instal·la l'app al teu dispositiu per accés ràpid</span>
+        <button onclick="instalarPWA()">Instal·lar</button>
+      </div>
+      <div class="card">
+        <div class="field">
+          <label>Nom del client *</label>
+          <input type="text" id="f-client" placeholder="Nom i cognoms" autocomplete="name">
+        </div>
+        <div class="grid2">
+          <div class="field">
+            <label>Telèfon 1</label>
+            <input type="tel" id="f-telefon" placeholder="000 000 000" style="min-width:0">
+          </div>
+          <div class="field">
+            <label>Telèfon 2 (opcional)</label>
+            <input type="tel" id="f-telefon2" placeholder="000 000 000" style="min-width:0">
+          </div>
+          <div class="field">
+            <label>Tècnic assignat</label>
+            <input type="text" id="f-tecnic" placeholder="Nom">
+          </div>
+        </div>
+        <div class="field">
+          <label>Adreça completa</label>
+          <div style="display:flex;gap:8px">
+            <input type="text" id="f-carrer" placeholder="Carrer, número, població..." style="flex:1">
+            <button type="button" onclick="navegarAdreca('f')" style="padding:10px 14px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-size:14px;font-weight:600;flex-shrink:0;color:var(--accent)" title="Obrir a Google Maps">📍 Maps</button>
+          </div>
+          <input type="hidden" id="f-lat">
+          <input type="hidden" id="f-lng">
+          <input type="hidden" id="f-poblacio">
+        </div>
+        <div class="field">
+          <label>Descripció del problema *</label>
+          <textarea id="f-descripcio" placeholder="Descriu el problema o avaria..."></textarea>
+        </div>
+        <div class="grid2">
+          <div class="field">
+            <label>Cost estimat (€)</label>
+            <input type="number" id="f-cost" placeholder="0.00" min="0" step="0.01" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label>Data de la trucada</label>
+            <input type="date" id="f-data">
+          </div>
+        </div>
+        <div class="field">
+          <label>Estat inicial</label>
+          <select id="f-estat">
+            <option value="Pendent">Pendent</option>
+            <option value="En curs">En curs</option>
+            <option value="Esperant peces">Esperant peces</option>
+            <option value="Llest per recollir">Llest per recollir</option>
+            <option value="Lliurat">Lliurat</option>
+            <option value="Finalitzat">Finalitzat</option>
+            <option value="Cancel·lat">Cancel·lat</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Anotacions</label>
+          <textarea id="f-anotacions" placeholder="Ex: només matins, trucar a la Mar, tardes a partir de les 16h..." style="min-height:56px"></textarea>
+        </div>
+        <div class="field" style="margin-bottom:10px">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:15px;font-weight:600;color:var(--red)">
+            <input type="checkbox" id="f-urgent" style="width:20px;height:20px;accent-color:var(--red);cursor:pointer">
+            <span>🚨 Marcar com a URGENT</span>
+          </label>
+        </div>
+        <div id="form-msg" class="msg"></div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="crearOrdre()">Crear ordre i generar full</button>
+          <button class="btn btn-ghost" onclick="netejar()">Netejar</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="panel-registre" class="panel">
+      <div class="filter-row">
+        <button class="chip active" onclick="setFiltro('',this)">Totes</button>
+        <button class="chip" onclick="setFiltro('urgent',this)" style="border-color:var(--red);color:var(--red)">🚨 Urgent</button>
+        <button class="chip" onclick="setFiltro('Pendent',this)">Pendent</button>
+        <button class="chip" onclick="setFiltro('En curs',this)">En curs</button>
+        <button class="chip" onclick="setFiltro('Esperant peces',this)">Esp. peces</button>
+        <button class="chip" onclick="setFiltro('Llest per recollir',this)">Llest</button>
+        <button class="chip" onclick="setFiltro('Lliurat',this)">Lliurat</button>
+        <button class="chip" onclick="setFiltro('Finalitzat',this)">Finalitzat</button>
+        <button class="chip" onclick="setFiltro('Cancel·lat',this)">Cancel·lat</button>
+      </div>
+      <div id="llista"></div>
+    </div>
+
+    <div id="panel-resum" class="panel">
+      <div style="margin-bottom:12px;display:flex;gap:8px">
+        <button class="btn btn-primary" style="background:var(--green);margin-top:0;flex:1" onclick="llistatDelDia()">📋 Llistat del dia</button>
+        <button class="btn btn-primary" style="background:#e85d26;margin-top:0;flex:1" onclick="fullaRuta()">🗺 Fulla de ruta</button>
+      </div>
+      <div id="resum-content"></div>
+    </div>
+
+  </div>
+</div>
+
+
+<div id="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:50;overflow-y:auto;padding:16px" onclick="tancarModal(event)">
+  <div style="background:var(--surface);border-radius:var(--radius-lg);max-width:600px;margin:0 auto;padding:20px;position:relative" onclick="event.stopPropagation()">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <h2 style="font-size:16px;font-weight:600">Editar ordre <span id="modal-num" style="color:var(--accent)"></span></h2>
+      <button onclick="tancarModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--text2);line-height:1">&times;</button>
+    </div>
+    <div class="field"><label>Nom del client *</label><input type="text" id="e-client" placeholder="Nom i cognoms"></div>
+    <div class="grid2">
+      <div class="grid2">
+      <div class="field"><label>Telèfon 1</label>
+        <input type="tel" id="e-telefon" placeholder="000 000 000" style="min-width:0" oninput="actualitzarBotonsContacte(this.value, document.getElementById('e-telefon2').value)">
+        <div style="display:flex;gap:8px;margin-top:6px">
+          <a id="e-tel1-btn" href="#" style="flex:1;text-align:center;padding:7px;border:1px solid var(--border);border-radius:8px;font-size:13px;text-decoration:none;color:var(--accent);font-weight:600;background:var(--surface2)">📞 Trucar</a>
+          <a id="e-wa1-btn" href="#" style="flex:1;text-align:center;padding:7px;border:1px solid var(--border);border-radius:8px;font-size:13px;text-decoration:none;color:#25D366;font-weight:600;background:var(--surface2)" target="_blank">💬 WhatsApp</a>
+        </div>
+      </div>
+      <div class="field"><label>Telèfon 2</label>
+        <input type="tel" id="e-telefon2" placeholder="000 000 000" style="min-width:0" oninput="actualitzarBotonsContacte(document.getElementById('e-telefon').value, this.value)">
+        <div style="display:flex;gap:8px;margin-top:6px">
+          <a id="e-tel2-btn" href="#" style="flex:1;text-align:center;padding:7px;border:1px solid var(--border);border-radius:8px;font-size:13px;text-decoration:none;color:var(--accent);font-weight:600;background:var(--surface2)">📞 Trucar</a>
+          <a id="e-wa2-btn" href="#" style="flex:1;text-align:center;padding:7px;border:1px solid var(--border);border-radius:8px;font-size:13px;text-decoration:none;color:#25D366;font-weight:600;background:var(--surface2)" target="_blank">💬 WhatsApp</a>
+        </div>
+      </div>
+    </div>
+      <div class="field"><label>Tècnic assignat</label><input type="text" id="e-tecnic" placeholder="Nom"></div>
+    </div>
+    <div class="field">
+      <label>Adreça completa</label>
+      <div style="display:flex;gap:8px">
+        <input type="text" id="e-carrer" placeholder="Carrer, número, població..." style="flex:1">
+        <button type="button" onclick="navegarAdreca('e')" style="padding:10px 14px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-size:14px;font-weight:600;flex-shrink:0;color:var(--accent)" title="Obrir a Google Maps">📍 Maps</button>
+      </div>
+      <input type="hidden" id="e-lat">
+      <input type="hidden" id="e-lng">
+      <input type="hidden" id="e-poblacio">
+    </div>
+    <div class="field"><label>Descripció del problema *</label><textarea id="e-descripcio" placeholder="Descriu el problema..." style="min-height:80px"></textarea></div>
+    <div class="grid2">
+      <div class="field"><label>Cost (€)</label><input type="number" id="e-cost" placeholder="0.00" min="0" step="0.01" inputmode="decimal"></div>
+      <div class="field"><label>Data de la trucada</label><input type="date" id="e-data"></div>
+    </div>
+    <div class="field"><label>Data d'entrega estimada</label><input type="date" id="e-dataentrega"></div>
+    <div class="field"><label>Estat</label>
+      <select id="e-estat">
+        <option value="Pendent">Pendent</option>
+        <option value="En curs">En curs</option>
+        <option value="Esperant peces">Esperant peces</option>
+        <option value="Llest per recollir">Llest per recollir</option>
+        <option value="Lliurat">Lliurat</option>
+        <option value="Finalitzat">Finalitzat</option>
+        <option value="Cancel·lat">Cancel·lat</option>
+      </select>
+    </div>
+    <div class="field"><label>Anotacions</label><textarea id="e-anotacions" placeholder="Ex: només matins, trucar a la Mar..." style="min-height:56px"></textarea></div>
+    <div class="field" style="margin-bottom:10px">
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:15px;font-weight:600;color:var(--red)">
+        <input type="checkbox" id="e-urgent" style="width:20px;height:20px;accent-color:var(--red);cursor:pointer">
+        <span>🚨 Marcar com a URGENT</span>
+      </label>
+    </div>
+    <div class="field">
+      <label>Fotos de l'avaria</label>
+      <input type="file" id="e-foto-input" accept="image/*" multiple style="padding:8px" onchange="afegirFotos(this.files)">
+      <div id="e-fotos-preview" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px"></div>
+    </div>
+    <div class="field">
+      <label>Intents de trucada</label>
+      <div id="e-intents-llista" style="font-size:12px;color:var(--text2);margin-bottom:6px;max-height:80px;overflow-y:auto"></div>
+      <button type="button" class="btn-sm" onclick="afegirIntent()" style="font-size:13px">📵 Registrar intent (no contesta)</button>
+    </div>
+    <div id="modal-msg" class="msg"></div>
+    <div class="btn-row" style="margin-top:12px">
+      <button class="btn btn-primary" onclick="desarEdicio()">Desar canvis</button>
+      <button class="btn btn-ghost" onclick="tancarModal()">Cancel·lar</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getDatabase, ref, push, onValue, update, remove } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+// ── Configuració Firebase ──
+const firebaseConfig = {
+  apiKey: "AIzaSyAIputL9dUBWP8vtRe1GurvV3SeeI1KFH4",
+  authDomain: "taller-5cc11.firebaseapp.com",
+  databaseURL: "https://taller-5cc11-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "taller-5cc11",
+  storageBucket: "taller-5cc11.firebasestorage.app",
+  messagingSenderId: "106949189017",
+  appId: "1:106949189017:web:ad904041df11bd207a4708"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+let ordres = [];
+let filtro = '';
+let deferredPrompt = null;
+
+const estatClass = {
+  'Pendent':'s-pendiente','En curs':'s-proceso','Esperant peces':'s-piezas',
+  'Llest per recollir':'s-listo','Lliurat':'s-entregado','Finalitzat':'s-finalitzat','Cancel·lat':'s-cancelado'
+};
+const estatsSig = ['Pendent','En curs','Esperant peces','Llest per recollir','Lliurat','Finalitzat','Cancel·lat'];
+
+function esMides(text){
+  if(!text) return false;
+  const p = ['mida','mides','mesura','mesures','medir','medida','medidas','finestres'];
+  return p.some(k => text.toLowerCase().includes(k));
+}
+
+function colorTecnic(tecnic, descripcio){
+  if(!tecnic) return null;
+  const t = tecnic.trim().toLowerCase();
+  if((t === 'joan') && esMides(descripcio)) return { bg: 'rgba(220,80,100,0.07)', border: '#dc5064', label: 'Joan · Mides' };
+  if(t === 'joan') return { bg: 'rgba(58,111,216,0.07)', border: '#3a6fd8', label: 'Joan' };
+  if(t === 'quel' || t === 'miquel') return { bg: 'rgba(42,157,92,0.07)', border: '#2a9d5c', label: tecnic };
+  return null;
+}
+
+function setSyncStatus(status){
+  const dot = document.getElementById('sync-dot');
+  const lbl = document.getElementById('sync-label');
+  if(status==='ok'){ dot.style.background='#4ab87a'; lbl.textContent='Sincronitzat \u2713'; }
+  else if(status==='err'){ dot.style.background='#e24b4a'; lbl.textContent='Sense connexi\u00f3 \u2014 dades locals'; }
+  else { dot.style.background='#d4a030'; lbl.textContent='Connectant...'; }
+}
+
+// Escolta canvis en temps real
+onValue(ref(db, 'ordres'), snap => {
+  const data = snap.val();
+  ordres = data ? Object.entries(data).map(([fbId,o])=>({...o, fbId})) : [];
+  ordres.sort((a,b)=>(b.ts||0)-(a.ts||0));
+  localStorage.setItem('taller_cache', JSON.stringify(ordres));
+  actualizarContador();
+  const activa = document.querySelector('.panel.active')?.id;
+  if(activa==='panel-registre') renderLlista();
+  if(activa==='panel-resum') renderResum();
+  setSyncStatus('ok');
+}, err => {
+  setSyncStatus('err');
+  const cache = localStorage.getItem('taller_cache');
+  if(cache){ ordres=JSON.parse(cache); actualizarContador(); }
+});
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault(); deferredPrompt=e;
+  document.getElementById('install-banner').style.display='flex';
+});
+window.instalarPWA = function(){
+  if(!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(()=>{ deferredPrompt=null; document.getElementById('install-banner').style.display='none'; });
+};
+
+window.showTab = function(id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  const idx=['nova','registre','resum'].indexOf(id);
+  document.querySelectorAll('.tab')[idx].classList.add('active');
+  if(id==='registre') renderLlista();
+  if(id==='resum') renderResum();
+};
+
+function siguienteNum(){
+  if(!ordres.length) return '001';
+  return String(Math.max(...ordres.map(o=>parseInt(o.num)||0))+1).padStart(3,'0');
+}
+
+window.crearOrdre = async function(){
+  const client = document.getElementById('f-client').value.trim();
+  const desc = document.getElementById('f-descripcio').value.trim();
+  const msg = document.getElementById('form-msg');
+  if(!client||!desc){ msg.className='msg err'; msg.textContent='El nom i la descripci\u00f3 s\u00f3n obligatoris.'; msg.style.display='block'; return; }
+  const o = {
+    num: siguienteNum(),
+    client, 
+    telefon: document.getElementById('f-telefon').value.trim(),
+    telefon2: document.getElementById('f-telefon2').value.trim(),
+    carrer: document.getElementById('f-carrer').value.trim(),
+    poblacio: document.getElementById('f-poblacio').value.trim(),
+    lat: document.getElementById('f-lat').value || null,
+    lng: document.getElementById('f-lng').value || null,
+    descripcio: desc,
+    tecnic: document.getElementById('f-tecnic').value.trim(),
+    cost: parseFloat(document.getElementById('f-cost').value)||0,
+    estat: document.getElementById('f-estat').value,
+    dataEntrega: document.getElementById('f-data').value,
+    dataEntrada: new Date().toLocaleDateString('ca-ES'),
+    anotacions: document.getElementById("f-anotacions").value.trim(),
+    ts: Date.now()
+  };
+  msg.className='msg ok'; msg.textContent='Desant...'; msg.style.display='block';
+  try {
+    await push(ref(db,'ordres'), o);
+    msg.textContent='\u2713 Ordre '+o.num+' creada. Generant full...';
+    setTimeout(()=>{ netejar(); imprimirFull(o); }, 500);
+  } catch(e){
+    msg.className='msg err'; msg.textContent='Error en desar. Comprova la connexi\u00f3.';
+  }
+};
+
+window.netejar = function(){
+  ['f-client','f-telefon','f-telefon2','f-carrer','f-poblacio','f-lat','f-lng','f-descripcio','f-tecnic','f-cost','f-data','f-anotacions'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-estat').value='Pendent';
+  document.getElementById('f-urgent').checked=false;
+  document.getElementById('form-msg').style.display='none';
+  inicialitzarFormulari();
+  document.getElementById('f-tecnic').value='';
+  document.getElementById('f-tecnic').style.borderColor='';
+};
+
+window.setFiltro = function(f, el){
+  filtro=f;
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderLlista();
+};
+
+function renderLlista(){
+  const ll = document.getElementById('llista');
+  const items = filtro === 'urgent' ? ordres.filter(o=>o.urgent) : (filtro ? ordres.filter(o=>o.estat===filtro) : ordres);
+  items.sort((a,b)=>{ if(a.urgent && !b.urgent) return -1; if(!a.urgent && b.urgent) return 1; return (b.ts||0)-(a.ts||0); });
+  if(!items.length){
+    ll.innerHTML=`<div class="empty"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg><p>${filtro?'No hi ha ordres amb aquest estat':'Sense reparacions registrades encara'}</p></div>`;
+    return;
+  }
+  ll.innerHTML = items.map(o=>`
+    <div class="order-card" onclick="obrirEdicio('${o.fbId}','${o.num}')" style="cursor:pointer;${o.urgent?'border:2px solid var(--red);border-left:5px solid var(--red)':o.estat==='Finalitzat'?'background:rgba(42,42,42,0.06);border-left:4px solid #555':(colorTecnic(o.tecnic,o.descripcio)?'background:'+colorTecnic(o.tecnic,o.descripcio).bg+';border-left:4px solid '+colorTecnic(o.tecnic,o.descripcio).border:'')}">
+      <div class="order-top">
+        <div class="order-num">${o.num}</div>
+        <div class="order-main">
+          <div class="order-name">${o.client||''}</div>
+          <div class="order-desc">${o.descripcio||''}${o.fotos&&o.fotos.length?' &nbsp;📷×'+o.fotos.length:''}</div>
+          ${o.anotacions?'<div style="font-size:12px;color:#8a5a00;margin-top:3px;font-style:italic">&#128204; '+o.anotacions+'</div>':''}
+          ${o.dataFinalitzacio?'<div style="font-size:11px;color:#555;margin-top:2px">✓ Finalitzat: '+o.dataFinalitzacio+'</div>':''}
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+          ${o.urgent?'<span style="background:var(--red-bg);color:var(--red);font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px">🚨 URGENT</span>':''}
+          ${colorTecnic(o.tecnic,o.descripcio)?'<span style="background:'+colorTecnic(o.tecnic,o.descripcio).border+';color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px">'+colorTecnic(o.tecnic,o.descripcio).label+'</span>':''}
+          <span class="badge ${estatClass[o.estat]||'s-pendiente'}">${o.estat||''}</span>
+        </div>
+      </div>
+      <div class="order-meta">
+        <div>
+          <span class="order-date">${o.dataEntrada||''}${o.tecnic?' \u00b7 '+o.tecnic:''}</span>
+          ${htmlContacte(o)}
+        </div>
+        <span class="order-cost">${o.cost>0?o.cost.toFixed(2)+' \u20ac':'\u2014'}</span>
+      </div>
+      <div class="order-btns" onclick="event.stopPropagation()">
+        <button class="btn-sm" onclick="avancarEstat('${o.fbId}','${o.num}')">\u2192 Avan\u00e7ar</button>
+        <button class="btn-sm" onclick="imprimirFullNum('${o.num}')">🖨 Imprimir</button>
+        <button class="btn-sm" onclick="eliminar('${o.fbId}','${o.num}')" style="color:var(--red)">Eliminar</button>
+      </div>
+    </div>`).join('');
+}
+
+window.avancarEstat = async function(fbId, num){
+  const o = ordres.find(x=>x.num===num); if(!o) return;
+  const nouEstat = estatsSig[(estatsSig.indexOf(o.estat)+1)%estatsSig.length];
+  const dataFin = nouEstat === 'Finalitzat' ? new Date().toLocaleDateString('ca-ES') : (o.dataFinalitzacio||null);
+  try { await update(ref(db,'ordres/'+fbId), {estat: nouEstat, dataFinalitzacio: dataFin}); toast('Estat \u2192 '+nouEstat); }
+  catch(e){ toast('Error en actualitzar'); }
+};
+
+window.eliminar = async function(fbId, num){
+  if(!confirm('Vols eliminar l\u2019ordre '+num+'? Aquesta acci\u00f3 no es pot desfer.')) return;
+  try { await remove(ref(db,'ordres/'+fbId)); toast('Ordre '+num+' eliminada'); }
+  catch(e){ toast('Error en eliminar'); }
+};
+
+function actualizarContador(){
+  document.getElementById('topbar-count').textContent = ordres.length;
+}
+
+function renderResum(){
+  const total=ordres.length;
+  const ingressos=ordres.filter(o=>['Lliurat','Finalitzat'].includes(o.estat)).reduce((s,o)=>s+(o.cost||0),0);
+  const enCurs=ordres.filter(o=>['Pendent','En curs','Esperant peces'].includes(o.estat)).length;
+  const llests=ordres.filter(o=>o.estat==='Llest per recollir').length;
+  const stats=[
+    {label:'Total ordres',val:total,bg:'var(--accent-light)',col:'var(--accent)'},
+    {label:'En curs',val:enCurs,bg:'var(--blue-bg)',col:'var(--blue)'},
+    {label:'Llests per recollir',val:llests,bg:'var(--green-bg)',col:'var(--green)'},
+    {label:'Ingressos lliurats',val:ingressos.toFixed(2)+' \u20ac',bg:'var(--amber-bg)',col:'var(--amber)'},
+  ];
+  const perEstat=estatsSig.map(e=>({e,n:ordres.filter(o=>o.estat===e).length})).filter(x=>x.n>0);
+  document.getElementById('resum-content').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+      ${stats.map(s=>`<div style="background:${s.bg};border-radius:var(--radius-lg);padding:14px 16px"><div style="font-size:12px;color:${s.col};font-weight:600;margin-bottom:4px">${s.label}</div><div style="font-size:24px;font-weight:700;color:${s.col};line-height:1">${s.val}</div></div>`).join('')}
+    </div>
+    <div class="card">
+      <div style="font-size:13px;font-weight:600;color:var(--text2);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px">Per estat</div>
+      ${perEstat.map(x=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span class="badge ${estatClass[x.e]||'s-pendiente'}">${x.e}</span><span style="font-size:15px;font-weight:600">${x.n}</span></div>`).join('')}
+      ${perEstat.length===0?'<p style="font-size:14px;color:var(--text3);text-align:center;padding:16px">Sense dades encara</p>':''}
+    </div>`;
+}
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+window.imprimirFullNum = function(num){ const o=ordres.find(x=>x.num===num); if(o) imprimirFull(o); };
+
+function imprimirFull(o){
+  const html=`<!DOCTYPE html><html lang="ca"><head><meta charset="utf-8"><title>Ordre ${o.num}</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;font-size:11pt;color:#111;padding:18mm}header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #1a1a2e}h1{font-size:20pt;color:#1a1a2e;font-weight:700}.sub{font-size:10pt;color:#666;margin-top:3px}.num-box{background:#1a1a2e;color:#fff;padding:8px 16px;border-radius:8px;text-align:center;min-width:90px}.nl{font-size:9pt;opacity:.7}.nv{font-size:24pt;font-weight:700;line-height:1.1}.st{background:#1a1a2e;color:#fff;padding:5px 10px;font-size:10pt;font-weight:700;margin:14px 0 6px;border-radius:4px}table{width:100%;border-collapse:collapse}td{border:1px solid #ccc;padding:7px 9px;font-size:10.5pt;vertical-align:top}td.l{background:#eeeef5;font-weight:700;color:#1a1a2e;width:120px;white-space:nowrap}.area{border:1px solid #ccc;min-height:60px;padding:7px 9px;font-size:10.5pt;border-radius:4px}.firma{border:1px solid #ccc;background:#f5f5f5;min-height:65px;text-align:center;padding:8px;font-size:10pt;color:#1a1a2e;font-weight:700;border-radius:4px}.flex2{display:flex;gap:12px}.flex2>div{flex:1}.footer{font-size:9pt;color:#999;text-align:center;margin-top:16px;font-style:italic}@media print{@page{margin:18mm;size:A4}}</style></head><body>
+  <header><div><h1>&#x1F527; Full de reparaci&oacute;</h1><div class="sub">Taller de reparacions</div></div><div class="num-box"><div class="nl">N&ordm; ORDRE</div><div class="nv">${o.num}</div></div></header>
+  <div class="st">Dades del client</div>
+  <table><tr><td class="l">Nom</td><td>${o.client||''}</td><td class="l">Tel&egrave;fon</td><td>${o.telefon||''}</td></tr><tr><td class="l">Adreça</td><td colspan="3">${o.carrer||''}</td></tr><tr><td class="l">Data d'entrada</td><td>${o.dataEntrada||''}</td><td class="l">Tècnic</td><td>${o.tecnic||''}</td></tr></table>
+  <div class="st">Descripci&oacute; del problema</div><div class="area">${o.descripcio||''}</div>
+  ${o.anotacions?'<div class="st">Anotacions</div><div class="area" style="background:#fffbe6;min-height:30px;">'+o.anotacions+'</div>':''}
+  <div class="st">Diagn&ograve;stic i treballs realitzats</div><div class="area" style="min-height:75px"></div>
+  <div class="st">Cost i estat</div>
+  <table><tr><td class="l">Cost (&euro;)</td><td>${o.cost>0?o.cost.toFixed(2)+' &euro;':''}</td><td class="l">Entrega estimada</td><td>${o.dataEntrega||''}</td></tr><tr><td class="l">Estat</td><td colspan="3">&#9744; Pendent &nbsp; &#9744; En curs &nbsp; &#9744; Esp. peces &nbsp; &#9744; Llest &nbsp; &#9744; Lliurat &nbsp; &#9744; Finalitzat</td></tr></table>
+  ${o.fotos&&o.fotos.length?'<div class="st">Fotos de l\'avaria</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">'+o.fotos.map(f=>'<img src="'+f+'" style="width:90px;height:90px;object-fit:cover;border-radius:6px;border:1px solid #ccc">').join('')+'</div>':''}
+  <div class="st">Signatures</div>
+  <div class="flex2" style="margin-top:6px"><div class="firma">Signatura del t&egrave;cnic<br><br><br></div><div class="firma">Signatura del client (entrega)<br><br><br></div></div>
+  <div class="footer">Justificant d'entrega de l'equip. Conserveu-lo fins a la recollida.</div>
+  <script>window.onload=()=>window.print()<\/script><button onclick='window.close()' style='position:fixed;top:12px;right:12px;background:#1a1a2e;color:#fff;border:none;border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer;z-index:999' title='Tancar'>×</button></body></html>`;
+  const w=window.open('','_blank','width=820,height=1000');
+  w.document.write(html); w.document.close();
+}
+
+window.llistatDelDia = function(){
+  const estats = ['Pendent','En curs','Esperant peces','Llest per recollir'];
+  const items = ordres.filter(o => estats.includes(o.estat));
+  const avui = new Date().toLocaleDateString('ca-ES');
+  if(!items.length){ alert('No hi ha reparacions pendents o en curs.'); return; }
+  const files = items.map((o,i) => `
+    <tr style="background:${o.urgent?'#fff5f5':i%2===0?'#fff':'#f8f7f4'};${o.urgent?'border-left:4px solid #7a1a1a':''}">
+      <td style="padding:8px 10px;border:1px solid #ddd;font-weight:700;color:#1a1a2e;text-align:center">${o.num}${o.urgent?'<br><span style="color:#7a1a1a;font-size:9pt">🚨</span>':''}</td>
+      <td style="padding:8px 10px;border:1px solid #ddd;font-weight:600">${o.client||''}</td>
+      <td style="padding:8px 10px;border:1px solid #ddd">${o.telefon||'—'}</td>
+      <td style="padding:8px 10px;border:1px solid #ddd">${o.carrer||'—'}${o.poblacio?' — '+o.poblacio:''}</td>
+      <td style="padding:8px 10px;border:1px solid #ddd">${o.descripcio||''}${o.anotacions?'<br><span style="color:#8a5a00;font-style:italic;font-size:9pt">&#128204; '+o.anotacions+'</span>':''}</td>
+      <td style="padding:8px 10px;border:1px solid #ddd;text-align:center">
+        <span style="background:${o.estat==='Pendent'?'#fef4e0':o.estat==='En curs'?'#e8f0f8':o.estat==='Esperant peces'?'#fef0e0':'#e8f5ee'};color:${o.estat==='Pendent'?'#8a5a00':o.estat==='En curs'?'#1a4a7a':o.estat==='Esperant peces'?'#8a4a00':'#1a7a4a'};padding:3px 8px;border-radius:99px;font-size:10pt;font-weight:600">${o.estat}</span>
+      </td>
+    </tr>`).join('');
+  const html=`<!DOCTYPE html><html lang="ca"><head><meta charset="utf-8"><title>Llistat del dia ${avui}</title>
+  <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;font-size:10.5pt;color:#111;padding:15mm}
+  header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #1a1a2e}
+  h1{font-size:18pt;color:#1a1a2e;font-weight:700}.sub{font-size:10pt;color:#666;margin-top:3px}
+  .data{font-size:13pt;font-weight:700;color:#1a1a2e}
+  table{width:100%;border-collapse:collapse}
+  th{background:#1a1a2e;color:#fff;padding:8px 10px;font-size:10pt;text-align:left;border:1px solid #1a1a2e}
+  th:first-child{text-align:center;width:50px}
+  .footer{font-size:9pt;color:#999;text-align:center;margin-top:14px;font-style:italic}
+  .total{margin-top:10px;font-size:11pt;font-weight:600;color:#1a1a2e;text-align:right}
+  @media print{@page{margin:15mm;size:A4 landscape}button{display:none!important}}
+  </style></head><body>
+  <header>
+    <div><h1>&#x1F527; Llistat de reparacions pendents</h1><div class="sub">Taller de reparacions</div></div>
+    <div class="data">Data: ${avui}</div>
+  </header>
+  <table>
+    <thead><tr>
+      <th>Nº</th><th>Client</th><th>Telèfon</th><th>Adreça</th><th>Problema / Reparació</th><th>Estat</th>
+    </tr></thead>
+    <tbody>${files}</tbody>
+  </table>
+  <div class="total">Total: ${items.length} reparaci${items.length===1?'ó':'ons'} pendents</div>
+  <div class="footer">Generat el ${avui} &mdash; Taller de reparacions</div>
+  <br><button onclick="window.print()" style="padding:8px 18px;background:#1a1a2e;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer;margin-right:8px">🖨 Imprimir</button>
+  <button onclick="descarregarPDF()" style="padding:8px 18px;background:#1a7a4a;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer">⬇ Descarregar PDF</button>
+  <script>
+  function descarregarPDF(){ window.print(); }
+  window.onload = function(){ document.title = 'Llistat_${avui.replace(/\//g,'-')}'; }
+  <\/script>
+  </body></html>`;
+  const w = window.open('','_blank','width=1100,height=800');
+  w.document.write(html); w.document.close();
+};
+
+// ── Inicialitzar formulari ──
+function inicialitzarFormulari(){
+  const avui = new Date().toISOString().split('T')[0];
+  document.getElementById('f-data').value = avui;
+}
+
+// ── Autodetecció tècnic per paraules clau ──
+document.getElementById('f-descripcio').addEventListener('input', function(){
+  const text = this.value.toLowerCase();
+  const paraulesMides = ['mida','mides','mesura','mesures','medir','medida','medidas'];
+  const esMides = paraulesMides.some(p => text.includes(p));
+  const tecnicField = document.getElementById('f-tecnic');
+  if(esMides){
+    tecnicField.value = 'Joan';
+    tecnicField.style.borderColor = 'var(--green)';
+    tecnicField.title = 'Assignat automàticament per detecció de mides';
+  } else {
+    tecnicField.style.borderColor = '';
+    tecnicField.title = '';
+  }
+});
+
+inicialitzarFormulari();
+
+let editFbId = null;
+
+
+let fotosActuals = [];
+
+function renderFotosPreview(){
+  const wrap = document.getElementById('e-fotos-preview');
+  if(!fotosActuals.length){ wrap.innerHTML = '<span style="font-size:12px;color:var(--text3)">Cap foto afegida encara.</span>'; return; }
+  wrap.innerHTML = fotosActuals.map((f, i) => `
+    <div style="position:relative;width:70px;height:70px">
+      <img src="${f}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;border:1px solid var(--border)">
+      <button onclick="eliminarFoto(${i})" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--red);color:#fff;border:none;font-size:12px;cursor:pointer;line-height:1">×</button>
+    </div>`).join('');
+}
+
+window.eliminarFoto = function(idx){
+  fotosActuals.splice(idx, 1);
+  renderFotosPreview();
+};
+
+window.afegirFotos = function(files){
+  const maxFotos = 6;
+  Array.from(files).forEach(file => {
+    if(fotosActuals.length >= maxFotos){ toast('Màxim '+maxFotos+' fotos per reparació'); return; }
+    comprimirImatge(file, (dataUrl) => {
+      fotosActuals.push(dataUrl);
+      renderFotosPreview();
+    });
+  });
+  document.getElementById('e-foto-input').value = '';
+};
+
+function comprimirImatge(file, callback){
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const img = new Image();
+    img.onload = function(){
+      const maxSize = 800;
+      let w = img.width, h = img.height;
+      if(w > h && w > maxSize){ h = h * maxSize / w; w = maxSize; }
+      else if(h > maxSize){ w = w * maxSize / h; h = maxSize; }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      callback(canvas.toDataURL('image/jpeg', 0.6));
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+
+const MSG_WA_CARD = encodeURIComponent('Bon dia, hem intentat contactar amb vostè per la seva reparació. Si us plau, posi\'s en contacte amb nosaltres. Gràcies. Serralleria Les Tries');
+
+function htmlContacte(o){
+  let html = '';
+  if(o.telefon){
+    html += '<div style="display:flex;gap:8px;align-items:center;margin-top:4px">';
+    html += '<a href="tel:'+o.telefon+'" onclick="event.stopPropagation()" style="font-size:13px;color:var(--accent);font-weight:600;text-decoration:none">📞 '+o.telefon+'</a>';
+    if(esMobil(o.telefon)) html += ' <a href="https://wa.me/34'+o.telefon.replace(/\s/g,'')+'?text='+MSG_WA_CARD+'" onclick="event.stopPropagation()" target="_blank" style="font-size:14px;text-decoration:none" title="WhatsApp">💬</a>';
+    html += '</div>';
+  }
+  if(o.telefon2){
+    html += '<div style="display:flex;gap:8px;align-items:center;margin-top:2px">';
+    html += '<a href="tel:'+o.telefon2+'" onclick="event.stopPropagation()" style="font-size:13px;color:var(--accent);font-weight:600;text-decoration:none">📞 '+o.telefon2+'</a>';
+    if(esMobil(o.telefon2)) html += ' <a href="https://wa.me/34'+o.telefon2.replace(/\s/g,'')+'?text='+MSG_WA_CARD+'" onclick="event.stopPropagation()" target="_blank" style="font-size:14px;text-decoration:none" title="WhatsApp">💬</a>';
+    html += '</div>';
+  }
+  if(o.intents && o.intents.length){
+    html += '<div style="font-size:11px;color:var(--text3);margin-top:3px">📵 '+o.intents.length+' intent'+(o.intents.length>1?'s':'')+' · últim: '+o.intents[o.intents.length-1].split(' ')[0]+'</div>';
+  }
+  return html;
+}
+
+window.obrirEdicio = function(fbId, num){
+  const o = ordres.find(x=>x.num===num); if(!o) return;
+  editFbId = fbId;
+  document.getElementById('modal-num').textContent = '#'+num;
+  document.getElementById('e-client').value = o.client||'';
+  document.getElementById('e-telefon').value = o.telefon||'';
+  document.getElementById('e-telefon2').value = o.telefon2||'';
+  intentsActuals = o.intents ? [...o.intents] : [];
+  renderIntents();
+  actualitzarBotonsContacte(o.telefon||'', o.telefon2||'', o.client||'');
+  document.getElementById('e-tecnic').value = o.tecnic||'';
+  document.getElementById('e-carrer').value = o.carrer||'';
+  document.getElementById('e-poblacio').value = o.poblacio||'';
+  document.getElementById('e-lat').value = o.lat||'';
+  document.getElementById('e-lng').value = o.lng||'';
+  document.getElementById('e-descripcio').value = o.descripcio||'';
+  document.getElementById('e-cost').value = o.cost||'';
+  document.getElementById('e-data').value = o.dataEntrada||'';
+  document.getElementById('e-dataentrega').value = o.dataEntrega||'';
+  document.getElementById('e-estat').value = o.estat||'Pendent';
+  document.getElementById('e-anotacions').value = o.anotacions||'';
+  fotosActuals = o.fotos || [];
+  renderFotosPreview();
+  document.getElementById('e-urgent').checked = o.urgent||false;
+  document.getElementById('modal-msg').style.display='none';
+  document.getElementById('modal-overlay').style.display='block';
+  document.body.style.overflow='hidden';
+};
+
+window.tancarModal = function(e){
+  if(e && e.target !== document.getElementById('modal-overlay')) return;
+  document.getElementById('modal-overlay').style.display='none';
+  document.body.style.overflow='';
+};
+
+window.desarEdicio = async function(){
+  const client = document.getElementById('e-client').value.trim();
+  const desc = document.getElementById('e-descripcio').value.trim();
+  const msg = document.getElementById('modal-msg');
+  if(!client||!desc){ msg.className='msg err'; msg.textContent='El nom i la descripci\u00f3 s\u00f3n obligatoris.'; msg.style.display='block'; return; }
+  const dades = {
+    client,
+    telefon: document.getElementById('e-telefon').value.trim(),
+    telefon2: document.getElementById('e-telefon2').value.trim(),
+    intents: intentsActuals,
+    tecnic: document.getElementById('e-tecnic').value.trim(),
+    carrer: document.getElementById('e-carrer').value.trim(),
+    poblacio: document.getElementById('e-poblacio').value.trim(),
+    lat: document.getElementById('e-lat').value || null,
+    lng: document.getElementById('e-lng').value || null,
+    descripcio: desc,
+    cost: parseFloat(document.getElementById('e-cost').value)||0,
+    dataEntrada: document.getElementById('e-data').value,
+    dataEntrega: document.getElementById('e-dataentrega').value,
+    estat: document.getElementById('e-estat').value,
+    dataFinalitzacio: document.getElementById('e-estat').value === 'Finalitzat'
+      ? (ordres.find(x=>x.fbId===editFbId)||{}).dataFinalitzacio || new Date().toLocaleDateString('ca-ES')
+      : null,
+    urgent: document.getElementById('e-urgent').checked,
+    anotacions: document.getElementById('e-anotacions').value.trim(),
+    fotos: fotosActuals,
+  };
+  msg.className='msg ok'; msg.textContent='Desant...'; msg.style.display='block';
+  try {
+    await update(ref(db,'ordres/'+editFbId), dades);
+    msg.textContent='\u2713 Canvis desats correctament.';
+    setTimeout(()=>{ document.getElementById('modal-overlay').style.display='none'; document.body.style.overflow=''; },800);
+  } catch(e){
+    msg.className='msg err'; msg.textContent='Error en desar. Comprova la connexi\u00f3.';
+  }
+};
+
+
+
+// ── Google Maps (via URL, sense API key) ──
+
+window.navegarAdreca = function(prefix){
+  const adreca = document.getElementById(prefix+'-carrer').value.trim();
+  if(!adreca){ toast('Escriu una adreça primer'); return; }
+  const url = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(adreca);
+  window.open(url, '_blank');
+};
+
+window.navegarA = function(lat, lng, adreca){
+  let url;
+  if(lat && lng){
+    url = 'https://www.google.com/maps/dir/?api=1&destination='+lat+','+lng+'&travelmode=driving';
+  } else if(adreca){
+    url = 'https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(adreca)+'&travelmode=driving';
+  } else { toast('Sense adreça per navegar'); return; }
+  window.open(url, '_blank');
+};
+
+window.fullaRuta = function(){
+  const estats = ['Pendent','En curs','Esperant peces','Llest per recollir'];
+  const ambAdreca = ordres.filter(o => estats.includes(o.estat) && o.lat && o.lng);
+  const sensAdreca = ordres.filter(o => estats.includes(o.estat) && (!o.lat || !o.lng));
+  const avui = new Date().toLocaleDateString('ca-ES');
+
+  if(!ambAdreca.length && !sensAdreca.length){ alert('No hi ha reparacions pendents.'); return; }
+
+  if(ambAdreca.length > 0){
+    const punts = ambAdreca.slice(0, 10);
+    const dest = punts[punts.length-1];
+    const waypts = punts.slice(0,-1).map(o=>o.lat+','+o.lng).join('|');
+    window.open('https://www.google.com/maps/dir/?api=1&destination='+dest.lat+','+dest.lng+'&waypoints='+encodeURIComponent(waypts)+'&travelmode=driving&optimize=true', '_blank');
+  }
+
+  let cardsHtml = '';
+  ambAdreca.forEach(function(o, i){
+    const note = o.anotacions ? '<div class="note">&#128204; '+o.anotacions+'</div>' : '';
+    const mapsLink = 'https://www.google.com/maps/dir/?api=1&destination='+o.lat+','+o.lng+'&travelmode=driving';
+    cardsHtml += '<div class="card amb-mapa">'
+      + '<div class="num">'+(i+1)+'</div>'
+      + '<div class="info">'
+      + '<div class="name">'+(o.client||'')+' <span style="font-size:10pt;font-weight:400;color:#666">&middot; Ordre '+o.num+'</span></div>'
+      + '<div class="addr">&#x1F4CD; '+(o.carrer||'')+(o.poblacio?' &middot; '+o.poblacio:'')+'</div>'
+      + '<div class="desc">'+(o.descripcio||'')+'</div>'
+      + note + '</div>'
+      + '<a href="'+mapsLink+'" target="_blank" class="maps-btn">&#x1F4CD; Maps</a></div>';
+  });
+
+  let sensHtml = '';
+  if(sensAdreca.length){
+    const noms = sensAdreca.map(function(o){ return '<span style="margin-right:8px">&middot; '+o.num+' '+o.client+'</span>'; }).join('');
+    sensHtml = '<div class="sense-coord"><strong>Sense ubicaci&oacute; ('+sensAdreca.length+'):</strong> '+noms+'</div>';
+  }
+
+  const html = '<!DOCTYPE html><html lang="ca"><head><meta charset="utf-8"><title>Fulla de ruta '+avui+'</title>'
+    + '<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;font-size:11pt;color:#111;padding:15mm}'
+    + 'header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #1a1a2e}'
+    + 'h1{font-size:18pt;color:#1a1a2e;font-weight:700}.data{font-size:13pt;font-weight:700;color:#1a1a2e}'
+    + '.card{border:1px solid #ddd;border-radius:8px;padding:12px 14px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start}'
+    + '.card.amb-mapa{border-left:4px solid #1a1a2e}.num{font-size:22px;font-weight:800;color:#1a1a2e;min-width:44px}'
+    + '.info{flex:1}.name{font-size:13pt;font-weight:700}.addr{font-size:11pt;color:#444;margin-top:3px}'
+    + '.desc{font-size:10pt;color:#666;margin-top:3px}.note{font-size:10pt;color:#8a5a00;font-style:italic;margin-top:3px}'
+    + '.maps-btn{background:#1a1a2e;color:#fff;padding:6px 12px;border-radius:6px;font-size:10pt;text-decoration:none;white-space:nowrap}'
+    + '.sense-coord{background:#f8f8f8;border-radius:8px;padding:10px 14px;margin-top:12px;font-size:10pt;color:#666}'
+    + '.footer{font-size:9pt;color:#999;text-align:center;margin-top:16px;font-style:italic}'
+    + '@media print{@page{margin:15mm;size:A4}button,.maps-btn{display:none!important}}</style></head><body>'
+    + '<header><div><h1>&#x1F5FA; Fulla de ruta</h1></div><div class="data">'+avui+'</div></header>'
+    + cardsHtml + sensHtml
+    + '<div class="footer">Generat el '+avui+' &middot; '+ambAdreca.length+' amb ubicaci&oacute; &middot; '+sensAdreca.length+' sense</div>'
+    + '<br><button onclick="window.print()" style="padding:8px 18px;background:#1a1a2e;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer">&#x1F5A8; Imprimir</button>'
+    + '</body></html>';
+
+  const w = window.open('','_blank','width=900,height=900');
+  w.document.write(html); w.document.close();
+};
+
+
+// ── Intents de trucada ──
+let intentsActuals = [];
+const MSG_WA = 'Bon dia, hem intentat contactar amb vostè per la seva reparació. Si us plau, posi\'s en contacte amb nosaltres. Gràcies. Serralleria Les Tries';
+
+function renderIntents(){
+  const div = document.getElementById('e-intents-llista');
+  if(!div) return;
+  if(!intentsActuals.length){
+    div.innerHTML = '<span style="color:var(--text3)">Cap intent registrat</span>';
+    return;
+  }
+  div.innerHTML = intentsActuals.map((intent, i) =>
+    '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--border)">'
+    + '<span>📵 ' + intent + '</span>'
+    + '<button onclick="eliminarIntent('+i+')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:12px;padding:0">×</button>'
+    + '</div>'
+  ).join('');
+}
+
+window.eliminarIntent = function(idx){
+  intentsActuals.splice(idx, 1);
+  renderIntents();
+};
+
+window.afegirIntent = function(){
+  const ara = new Date();
+  const data = ara.toLocaleDateString('ca-ES');
+  const hora = ara.toLocaleTimeString('ca-ES', {hour:'2-digit', minute:'2-digit'});
+  intentsActuals.push(data + ' ' + hora);
+  renderIntents();
+};
+
+function esMobil(tel){
+  if(!tel) return false;
+  const t = tel.replace(/\s/g,'');
+  return t.length <= 9 && (t.startsWith('6') || t.startsWith('7'));
+}
+
+function actualitzarBotonsContacte(tel1, tel2, client){
+  const msg = encodeURIComponent(MSG_WA);
+  const b1tel = document.getElementById('e-tel1-btn');
+  const b1wa = document.getElementById('e-wa1-btn');
+  const b2tel = document.getElementById('e-tel2-btn');
+  const b2wa = document.getElementById('e-wa2-btn');
+
+  if(b1tel){
+    if(tel1){ b1tel.href='tel:'+tel1; b1tel.style.opacity='1'; b1tel.style.pointerEvents='auto'; }
+    else { b1tel.style.opacity='0.3'; b1tel.style.pointerEvents='none'; }
+  }
+  if(b1wa){
+    if(tel1 && esMobil(tel1)){ b1wa.href='https://wa.me/34'+tel1.replace(/\s/g,'')+'?text='+msg; b1wa.target='_blank'; b1wa.style.opacity='1'; b1wa.style.pointerEvents='auto'; }
+    else { b1wa.style.opacity='0.3'; b1wa.style.pointerEvents='none'; b1wa.title='Només disponible per a mòbils'; }
+  }
+  if(b2tel){
+    if(tel2){ b2tel.href='tel:'+tel2; b2tel.style.opacity='1'; b2tel.style.pointerEvents='auto'; }
+    else { b2tel.style.opacity='0.3'; b2tel.style.pointerEvents='none'; }
+  }
+  if(b2wa){
+    if(tel2 && esMobil(tel2)){ b2wa.href='https://wa.me/34'+tel2.replace(/\s/g,'')+'?text='+msg; b2wa.target='_blank'; b2wa.style.opacity='1'; b2wa.style.pointerEvents='auto'; }
+    else { b2wa.style.opacity='0.3'; b2wa.style.pointerEvents='none'; b2wa.title='Només disponible per a mòbils'; }
+  }
+}
+
+// Actualitzar botons quan es canvia el telèfon al modal
+document.addEventListener('input', function(e){
+  if(e.target.id === 'e-telefon' || e.target.id === 'e-telefon2'){
+    actualitzarBotonsContacte(
+      document.getElementById('e-telefon').value,
+      document.getElementById('e-telefon2').value,
+      ''
+    );
+  }
+});
+</script>
+</body>
+</html>
