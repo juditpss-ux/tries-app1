@@ -772,7 +772,7 @@ function imprimirFull(o){
   <div class="st">Signatures</div>
   <div class="flex2" style="margin-top:6px"><div class="firma">Signatura del t&egrave;cnic<br><br><br></div><div class="firma">Signatura del client (entrega)<br><br><br></div></div>
   <div class="footer">Justificant d'entrega de l'equip. Conserveu-lo fins a la recollida.</div>
-  <script>window.onload=()=>window.print()<\/script><button onclick='window.close()' style='position:fixed;top:12px;right:12px;background:#1a1a2e;color:#fff;border:none;border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer;z-index:999' title='Tancar'>×</button></body></html>`;
+  <button onclick='window.close()' style='position:fixed;top:12px;right:12px;background:#1a1a2e;color:#fff;border:none;border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer;z-index:999' title='Tancar'>×</button></body></html>`;
   const w=window.open('','_blank','width=820,height=1000');
   w.document.write(html); w.document.close();
 }
@@ -820,11 +820,6 @@ window.llistatDelDia = function(){
   <div class="footer">Generat el ${avui} &mdash; Taller de reparacions</div>
   <button onclick="window.close()" style="position:fixed;top:12px;right:12px;background:#1a1a2e;color:#fff;border:none;border-radius:50%;width:40px;height:40px;font-size:20px;cursor:pointer;z-index:999" title="Tancar">&times;</button>
   <br><button onclick="window.print()" style="padding:8px 18px;background:#1a1a2e;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer;margin-right:8px">&#x1F5A8; Imprimir</button>
-  <button onclick="descarregarPDF()" style="padding:8px 18px;background:#1a7a4a;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer">⬇ Descarregar PDF</button>
-  <script>
-  function descarregarPDF(){ window.print(); }
-  window.onload = function(){ document.title = 'Llistat_${avui.replace(/\//g,'-')}'; }
-  <\/script>
   </body></html>`;
   const w = window.open('','_blank','width=1100,height=800');
   w.document.write(html); w.document.close();
