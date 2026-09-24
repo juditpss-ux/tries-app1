@@ -161,8 +161,9 @@ var _fotoIndex = 0;
 var _fotosLlista = [];
 
 function obrirFotoModal(src){
-  _fotosLlista = fotosActuals || [];
+  _fotosLlista = (window.fotosActuals && window.fotosActuals.length) ? window.fotosActuals : [src];
   _fotoIndex = _fotosLlista.indexOf(src);
+  if(_fotoIndex === -1){ _fotosLlista = [src]; _fotoIndex = 0; }
   if(_fotoIndex === -1) _fotoIndex = 0;
   mostrarFotoModal();
   document.getElementById('foto-modal').style.display = 'flex';
