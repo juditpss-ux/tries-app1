@@ -850,6 +850,7 @@ window.fotosActuals = [];
 let fotosActuals = window.fotosActuals;
 
 function renderFotosPreview(){
+  window.fotosActuals = fotosActuals;
   const wrap = document.getElementById('e-fotos-preview');
   if(!fotosActuals.length){ wrap.innerHTML = '<span style="font-size:12px;color:var(--text3)">Cap foto afegida encara.</span>'; return; }
   wrap.innerHTML = fotosActuals.map((f, i) => `
