@@ -99,9 +99,175 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .install-banner{background:var(--accent-light);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:13px}
 .install-banner button{margin-left:auto;flex-shrink:0;background:var(--accent);color:#fff;border:none;padding:7px 14px;border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:500}
 @media print{.no-print,.topbar,.toast{display:none!important}body{background:#fff}}
+.app{display:none}
 </style>
+
+<script>
+// Mostrar app si ja has entrat
+if(localStorage.getItem('lt_ok') === '1'){
+  document.addEventListener('DOMContentLoaded', function(){
+    var ls = document.getElementById('login-screen');
+    var ap = document.querySelector('.app');
+    if(ls) ls.style.display = 'none';
+    if(ap) ap.style.display = 'flex';
+  });
+}
+
+function toggleUrgentModal(){
+  var cb = document.getElementById('e-urgent');
+  var btn = document.getElementById('e-urgent-btn');
+  var check = document.getElementById('e-urgent-check');
+  cb.checked = !cb.checked;
+  if(cb.checked){
+    btn.style.borderColor = '#7a1a1a';
+    btn.style.background = '#f5e8e8';
+    check.style.background = '#7a1a1a';
+    check.style.borderColor = '#7a1a1a';
+    check.innerHTML = '✓';
+    check.style.color = '#fff';
+    check.style.fontWeight = '700';
+  } else {
+    btn.style.borderColor = '';
+    btn.style.background = '';
+    check.style.background = '#fff';
+    check.style.borderColor = '#ccc';
+    check.innerHTML = '';
+  }
+}
+function setUrgentModal(val){
+  var cb = document.getElementById('e-urgent');
+  if(cb) cb.checked = val;
+  var btn = document.getElementById('e-urgent-btn');
+  var check = document.getElementById('e-urgent-check');
+  if(!btn || !check) return;
+  if(val){
+    btn.style.borderColor = '#7a1a1a';
+    btn.style.background = '#f5e8e8';
+    check.style.background = '#7a1a1a';
+    check.style.borderColor = '#7a1a1a';
+    check.innerHTML = '✓';
+    check.style.color = '#fff';
+    check.style.fontWeight = '700';
+  } else {
+    btn.style.borderColor = '';
+    btn.style.background = '';
+    check.style.background = '#fff';
+    check.style.borderColor = '#ccc';
+    check.innerHTML = '';
+  }
+}
+
+var _fotoIndex = 0;
+var _fotosLlista = [];
+
+function obrirFotoModal(src){
+  _fotosLlista = fotosActuals || [];
+  _fotoIndex = _fotosLlista.indexOf(src);
+  if(_fotoIndex === -1) _fotoIndex = 0;
+  mostrarFotoModal();
+  document.getElementById('foto-modal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function mostrarFotoModal(){
+  var img = document.getElementById('foto-modal-img');
+  var counter = document.getElementById('foto-counter');
+  var prev = document.getElementById('foto-prev');
+  var next = document.getElementById('foto-next');
+  img.src = _fotosLlista[_fotoIndex];
+  if(_fotosLlista.length > 1){
+    counter.textContent = (_fotoIndex+1) + ' / ' + _fotosLlista.length;
+    counter.style.display = 'block';
+    prev.style.display = _fotoIndex > 0 ? 'block' : 'none';
+    next.style.display = _fotoIndex < _fotosLlista.length-1 ? 'block' : 'none';
+  } else {
+    counter.style.display = 'none';
+    prev.style.display = 'none';
+    next.style.display = 'none';
+  }
+}
+
+function canviarFoto(dir){
+  _fotoIndex += dir;
+  if(_fotoIndex < 0) _fotoIndex = 0;
+  if(_fotoIndex >= _fotosLlista.length) _fotoIndex = _fotosLlista.length-1;
+  mostrarFotoModal();
+}
+
+function tancarFotoModal(){
+  document.getElementById('foto-modal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+function verificarCodi(){
+  var v = document.getElementById('login-input').value.trim();
+  if(v === 'tries2020'){
+    localStorage.setItem('lt_ok','1');
+    document.getElementById('login-screen').style.display = 'none';
+    document.querySelector('.app').style.display = 'flex';
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+    document.getElementById('login-input').value = '';
+    document.getElementById('login-input').focus();
+  }
+}
+// Executar immediatament quan carrega el script
+
+</script>
+<script>
+var _urgent = false;
+function toggleUrgent(){
+  _urgent = !_urgent;
+  var btn = document.getElementById('f-urgent-btn');
+  var check = document.getElementById('f-urgent-check');
+  if(_urgent){
+    btn.style.borderColor = '#7a1a1a';
+    btn.style.background = '#f5e8e8';
+    check.style.background = '#7a1a1a';
+    check.style.borderColor = '#7a1a1a';
+    check.innerHTML = '✓';
+    check.style.color = '#fff';
+    check.style.fontWeight = '700';
+  } else {
+    btn.style.borderColor = '';
+    btn.style.background = '';
+    check.style.background = '#fff';
+    check.style.borderColor = '#ccc';
+    check.innerHTML = '';
+  }
+}
+function resetUrgent(){
+  _urgent = false;
+  var btn = document.getElementById('f-urgent-btn');
+  var check = document.getElementById('f-urgent-check');
+  if(btn){ btn.style.borderColor=''; btn.style.background=''; }
+  if(check){ check.style.background='#fff'; check.style.borderColor='#ccc'; check.innerHTML=''; }
+}
+</script>
 </head>
 <body>
+
+</div>
+
+<div id="login-screen" style="display:flex;position:fixed;inset:0;background:#1a1a2e;z-index:9999;flex-direction:column;align-items:center;justify-content:center;padding:32px">
+  <img src="icon-512.png" style="width:100px;height:100px;object-fit:contain;border-radius:16px;margin-bottom:24px;background:#fff;padding:8px">
+  <h1 style="color:#fff;font-size:22px;font-weight:800;margin-bottom:4px">Serralleria Les Tries</h1>
+  <p style="color:rgba(255,255,255,0.5);font-size:14px;margin-bottom:36px">Gestió de reparacions</p>
+  <div style="width:100%;max-width:300px">
+    <input type="password" id="login-input" placeholder="Codi d'accés..." style="width:100%;padding:14px 16px;font-size:16px;border-radius:12px;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.1);color:#fff;outline:none;text-align:center;margin-bottom:12px;font-family:inherit;-webkit-text-security:disc" onkeydown="if(event.key==='Enter') verificarCodi()">
+    <button onclick="verificarCodi()" style="width:100%;padding:14px;font-size:16px;font-weight:700;border:none;border-radius:12px;background:#fff;color:#1a1a2e;cursor:pointer;font-family:inherit">Entrar</button>
+    <p id="login-error" style="color:#ff8888;font-size:13px;text-align:center;margin-top:10px;display:none">Codi incorrecte. Torna-ho a intentar.</p>
+  </div>
+</div>
+
+<div id="foto-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9998;align-items:center;justify-content:center;padding:16px" onclick="tancarFotoModal()">
+  <button onclick="tancarFotoModal()" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.2);border:none;color:#fff;width:40px;height:40px;border-radius:50%;font-size:22px;cursor:pointer;z-index:1">×</button>
+  <button id="foto-prev" onclick="event.stopPropagation();canviarFoto(-1)" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.2);border:none;color:#fff;width:44px;height:44px;border-radius:50%;font-size:22px;cursor:pointer;display:none">‹</button>
+  <div style="text-align:center" onclick="event.stopPropagation()">
+    <img id="foto-modal-img" src="" style="max-width:100%;max-height:85vh;object-fit:contain;border-radius:8px">
+    <div id="foto-counter" style="color:rgba(255,255,255,0.6);font-size:13px;margin-top:8px;display:none"></div>
+  </div>
+  <button id="foto-next" onclick="event.stopPropagation();canviarFoto(1)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.2);border:none;color:#fff;width:44px;height:44px;border-radius:50%;font-size:22px;cursor:pointer;display:none">›</button>
+</div>
 <div class="app">
   <div class="topbar no-print">
     <div class="topbar-row">
@@ -188,10 +354,11 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
           <textarea id="f-anotacions" placeholder="Ex: només matins, trucar a la Mar, tardes a partir de les 16h..." style="min-height:56px"></textarea>
         </div>
         <div class="field" style="margin-bottom:10px">
-          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:15px;font-weight:600;color:var(--red)">
-            <input type="checkbox" id="f-urgent" style="width:20px;height:20px;accent-color:var(--red);cursor:pointer">
-            <span>🚨 Marcar com a URGENT</span>
-          </label>
+          <div onclick="toggleUrgent()" id="f-urgent-btn" style="display:flex;align-items:center;gap:12px;cursor:pointer;padding:12px 14px;border-radius:var(--radius);border:2px solid var(--border);background:var(--surface2);user-select:none;transition:all 0.15s">
+            <div id="f-urgent-check" style="width:24px;height:24px;border-radius:6px;border:2px solid #ccc;background:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;transition:all 0.15s"></div>
+            <span style="font-size:15px;font-weight:600;color:var(--text)">🚨 Marcar com a URGENT</span>
+          </div>
+          <input type="checkbox" id="f-urgent" style="display:none">
         </div>
         <div id="form-msg" class="msg"></div>
         <div class="btn-row">
@@ -202,6 +369,11 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     </div>
 
     <div id="panel-registre" class="panel">
+      <div style="position:relative;margin-bottom:10px">
+        <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none">🔍</span>
+        <input type="text" id="cerca-input" placeholder="Cercar per client, número o problema..." style="width:100%;padding:10px 12px 10px 36px;font-size:14px" oninput="cercarRegistre(this.value)" autocomplete="off">
+        <button id="cerca-clear" onclick="netejarCerca()" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:18px;cursor:pointer;color:var(--text3)">×</button>
+      </div>
       <div class="filter-row">
         <button class="chip active" onclick="setFiltro('',this)">Totes</button>
         <button class="chip" onclick="setFiltro('urgent',this)" style="border-color:var(--red);color:var(--red)">🚨 Urgent</button>
@@ -283,10 +455,11 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     </div>
     <div class="field"><label>Anotacions</label><textarea id="e-anotacions" placeholder="Ex: només matins, trucar a la Mar..." style="min-height:56px"></textarea></div>
     <div class="field" style="margin-bottom:10px">
-      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:15px;font-weight:600;color:var(--red)">
-        <input type="checkbox" id="e-urgent" style="width:20px;height:20px;accent-color:var(--red);cursor:pointer">
-        <span>🚨 Marcar com a URGENT</span>
-      </label>
+      <div onclick="toggleUrgentModal()" id="e-urgent-btn" style="display:flex;align-items:center;gap:12px;cursor:pointer;padding:12px 14px;border-radius:var(--radius);border:2px solid var(--border);background:var(--surface2);user-select:none;transition:all 0.15s">
+        <div id="e-urgent-check" style="width:24px;height:24px;border-radius:6px;border:2px solid #ccc;background:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0"></div>
+        <span style="font-size:15px;font-weight:600;color:var(--text)">🚨 Marcar com a URGENT</span>
+      </div>
+      <input type="checkbox" id="e-urgent" style="display:none">
     </div>
     <div class="field">
       <label>Fotos de l'avaria</label>
@@ -310,6 +483,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getDatabase, ref, push, onValue, update, remove } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js';
 
 // ── Configuració Firebase ──
 const firebaseConfig = {
@@ -324,6 +498,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const messaging = getMessaging(app);
 
 let ordres = [];
 let filtro = '';
@@ -421,12 +596,14 @@ window.crearOrdre = async function(){
     dataEntrega: document.getElementById('f-data').value,
     dataEntrada: new Date().toLocaleDateString('ca-ES'),
     anotacions: document.getElementById("f-anotacions").value.trim(),
+    urgent: document.getElementById('f-urgent').checked,
     ts: Date.now()
   };
   msg.className='msg ok'; msg.textContent='Desant...'; msg.style.display='block';
   try {
     await push(ref(db,'ordres'), o);
     msg.textContent='\u2713 Ordre '+o.num+' creada. Generant full...';
+    await enviarNotificacioNouaOrdre(o);
     setTimeout(()=>{ netejar(); imprimirFull(o); }, 500);
   } catch(e){
     msg.className='msg err'; msg.textContent='Error en desar. Comprova la connexi\u00f3.';
@@ -436,7 +613,7 @@ window.crearOrdre = async function(){
 window.netejar = function(){
   ['f-client','f-telefon','f-telefon2','f-carrer','f-poblacio','f-lat','f-lng','f-descripcio','f-tecnic','f-cost','f-data','f-anotacions'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('f-estat').value='Pendent';
-  document.getElementById('f-urgent').checked=false;
+  resetUrgent();
   document.getElementById('form-msg').style.display='none';
   inicialitzarFormulari();
   document.getElementById('f-tecnic').value='';
@@ -452,8 +629,30 @@ window.setFiltro = function(f, el){
 
 function renderLlista(){
   const ll = document.getElementById('llista');
-  const items = filtro === 'urgent' ? ordres.filter(o=>o.urgent) : (filtro ? ordres.filter(o=>o.estat===filtro) : ordres);
-  items.sort((a,b)=>{ if(a.urgent && !b.urgent) return -1; if(!a.urgent && b.urgent) return 1; return (b.ts||0)-(a.ts||0); });
+  let items = filtro === 'urgent' ? ordres.filter(o=>o.urgent) : (filtro ? ordres.filter(o=>o.estat===filtro) : ordres);
+  if(textCerca){
+    items = items.filter(o =>
+      (o.client||'').toLowerCase().includes(textCerca) ||
+      (o.num||'').toLowerCase().includes(textCerca) ||
+      (o.descripcio||'').toLowerCase().includes(textCerca) ||
+      (o.telefon||'').includes(textCerca) ||
+      (o.telefon2||'').includes(textCerca) ||
+      (o.carrer||'').toLowerCase().includes(textCerca)
+    );
+  }
+  items.sort((a,b)=>{
+    const acabats = ['Finalitzat','Lliurat','Cancel·lat'];
+    const aAcabat = acabats.includes(a.estat);
+    const bAcabat = acabats.includes(b.estat);
+    // Acabats sempre al final
+    if(aAcabat && !bAcabat) return 1;
+    if(!aAcabat && bAcabat) return -1;
+    // Urgents primer (entre els no acabats)
+    if(a.urgent && !b.urgent) return -1;
+    if(!a.urgent && b.urgent) return 1;
+    // Resta per data (més nous primer)
+    return (b.ts||0)-(a.ts||0);
+  });
   if(!items.length){
     ll.innerHTML=`<div class="empty"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg><p>${filtro?'No hi ha ordres amb aquest estat':'Sense reparacions registrades encara'}</p></div>`;
     return;
@@ -539,7 +738,8 @@ function toast(msg){
 window.imprimirFullNum = function(num){ const o=ordres.find(x=>x.num===num); if(o) imprimirFull(o); };
 
 function imprimirFull(o){
-  const html=`<!DOCTYPE html><html lang="ca"><head><meta charset="utf-8"><title>Ordre ${o.num}</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;font-size:11pt;color:#111;padding:18mm}header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #1a1a2e}h1{font-size:20pt;color:#1a1a2e;font-weight:700}.sub{font-size:10pt;color:#666;margin-top:3px}.num-box{background:#1a1a2e;color:#fff;padding:8px 16px;border-radius:8px;text-align:center;min-width:90px}.nl{font-size:9pt;opacity:.7}.nv{font-size:24pt;font-weight:700;line-height:1.1}.st{background:#1a1a2e;color:#fff;padding:5px 10px;font-size:10pt;font-weight:700;margin:14px 0 6px;border-radius:4px}table{width:100%;border-collapse:collapse}td{border:1px solid #ccc;padding:7px 9px;font-size:10.5pt;vertical-align:top}td.l{background:#eeeef5;font-weight:700;color:#1a1a2e;width:120px;white-space:nowrap}.area{border:1px solid #ccc;min-height:60px;padding:7px 9px;font-size:10.5pt;border-radius:4px}.firma{border:1px solid #ccc;background:#f5f5f5;min-height:65px;text-align:center;padding:8px;font-size:10pt;color:#1a1a2e;font-weight:700;border-radius:4px}.flex2{display:flex;gap:12px}.flex2>div{flex:1}.footer{font-size:9pt;color:#999;text-align:center;margin-top:16px;font-style:italic}@media print{@page{margin:18mm;size:A4}}</style></head><body>
+  const html=`<!DOCTYPE html><html lang="ca"><head><meta charset="utf-8"><title>Ordre ${o.num}</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;font-size:11pt;color:#111;padding:18mm}header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #1a1a2e}h1{font-size:20pt;color:#1a1a2e;font-weight:700}.sub{font-size:10pt;color:#666;margin-top:3px}.num-box{background:#1a1a2e;color:#fff;padding:8px 16px;border-radius:8px;text-align:center;min-width:90px}.nl{font-size:9pt;opacity:.7}.nv{font-size:24pt;font-weight:700;line-height:1.1}.st{background:#1a1a2e;color:#fff;padding:5px 10px;font-size:10pt;font-weight:700;margin:14px 0 6px;border-radius:4px}table{width:100%;border-collapse:collapse}td{border:1px solid #ccc;padding:7px 9px;font-size:10.5pt;vertical-align:top}td.l{background:#eeeef5;font-weight:700;color:#1a1a2e;width:120px;white-space:nowrap}.area{border:1px solid #ccc;min-height:60px;padding:7px 9px;font-size:10.5pt;border-radius:4px}.firma{border:1px solid #ccc;background:#f5f5f5;min-height:65px;text-align:center;padding:8px;font-size:10pt;color:#1a1a2e;font-weight:700;border-radius:4px}.flex2{display:flex;gap:12px}.flex2>div{flex:1}.footer{font-size:9pt;color:#999;text-align:center;margin-top:16px;font-style:italic}@media print{@page{margin:18mm;size:A4}}</style>
+</head><body>
   <header><div><h1>&#x1F527; Full de reparaci&oacute;</h1><div class="sub">Taller de reparacions</div></div><div class="num-box"><div class="nl">N&ordm; ORDRE</div><div class="nv">${o.num}</div></div></header>
   <div class="st">Dades del client</div>
   <table><tr><td class="l">Nom</td><td>${o.client||''}</td><td class="l">Tel&egrave;fon</td><td>${o.telefon||''}</td></tr><tr><td class="l">Adreça</td><td colspan="3">${o.carrer||''}</td></tr><tr><td class="l">Data d'entrada</td><td>${o.dataEntrada||''}</td><td class="l">Tècnic</td><td>${o.tecnic||''}</td></tr></table>
@@ -584,7 +784,8 @@ window.llistatDelDia = function(){
   .footer{font-size:9pt;color:#999;text-align:center;margin-top:14px;font-style:italic}
   .total{margin-top:10px;font-size:11pt;font-weight:600;color:#1a1a2e;text-align:right}
   @media print{@page{margin:15mm;size:A4 landscape}button{display:none!important}}
-  </style></head><body>
+  </style>
+</head><body>
   <header>
     <div><h1>&#x1F527; Llistat de reparacions pendents</h1><div class="sub">Taller de reparacions</div></div>
     <div class="data">Data: ${avui}</div>
@@ -597,7 +798,8 @@ window.llistatDelDia = function(){
   </table>
   <div class="total">Total: ${items.length} reparaci${items.length===1?'ó':'ons'} pendents</div>
   <div class="footer">Generat el ${avui} &mdash; Taller de reparacions</div>
-  <br><button onclick="window.print()" style="padding:8px 18px;background:#1a1a2e;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer;margin-right:8px">🖨 Imprimir</button>
+  <button onclick="window.close()" style="position:fixed;top:12px;right:12px;background:#1a1a2e;color:#fff;border:none;border-radius:50%;width:40px;height:40px;font-size:20px;cursor:pointer;z-index:999" title="Tancar">&times;</button>
+  <br><button onclick="window.print()" style="padding:8px 18px;background:#1a1a2e;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer;margin-right:8px">&#x1F5A8; Imprimir</button>
   <button onclick="descarregarPDF()" style="padding:8px 18px;background:#1a7a4a;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer">⬇ Descarregar PDF</button>
   <script>
   function descarregarPDF(){ window.print(); }
@@ -642,7 +844,7 @@ function renderFotosPreview(){
   if(!fotosActuals.length){ wrap.innerHTML = '<span style="font-size:12px;color:var(--text3)">Cap foto afegida encara.</span>'; return; }
   wrap.innerHTML = fotosActuals.map((f, i) => `
     <div style="position:relative;width:70px;height:70px">
-      <img src="${f}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;border:1px solid var(--border)">
+      <img src="${f}" onclick="obrirFotoModal('${f}')" style="width:100%;height:100%;object-fit:cover;border-radius:8px;border:1px solid var(--border);cursor:pointer" title="Clic per ampliar">
       <button onclick="eliminarFoto(${i})" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--red);color:#fff;border:none;font-size:12px;cursor:pointer;line-height:1">×</button>
     </div>`).join('');
 }
@@ -729,7 +931,7 @@ window.obrirEdicio = function(fbId, num){
   document.getElementById('e-anotacions').value = o.anotacions||'';
   fotosActuals = o.fotos || [];
   renderFotosPreview();
-  document.getElementById('e-urgent').checked = o.urgent||false;
+  setUrgentModal(o.urgent||false);
   document.getElementById('modal-msg').style.display='none';
   document.getElementById('modal-overlay').style.display='block';
   document.body.style.overflow='hidden';
@@ -764,7 +966,7 @@ window.desarEdicio = async function(){
     dataFinalitzacio: document.getElementById('e-estat').value === 'Finalitzat'
       ? (ordres.find(x=>x.fbId===editFbId)||{}).dataFinalitzacio || new Date().toLocaleDateString('ca-ES')
       : null,
-    urgent: document.getElementById('e-urgent').checked,
+    urgent: _urgent,
     anotacions: document.getElementById('e-anotacions').value.trim(),
     fotos: fotosActuals,
   };
@@ -930,6 +1132,99 @@ document.addEventListener('input', function(e){
     );
   }
 });
+
+// ── Notificacions Push ──
+const VAPID_KEY = 'BLULKFEDSiCwpjKsionidBlROiqPHzlIHWlqkYj4ZjKRp0J30BxqOioTL7RJx5H8jVYKLbQN22issBg-dHCn6oU';
+
+async function inicialitzarNotificacions(){
+  try {
+    // Registrar Service Worker
+    if('serviceWorker' in navigator){
+      await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+    }
+    // Demanar permís
+    const permis = await Notification.requestPermission();
+    if(permis !== 'granted'){ console.log('Notificacions denegades'); return; }
+    // Obtenir token FCM
+    const token = await getToken(messaging, { vapidKey: VAPID_KEY });
+    if(token){
+      // Guardar token a Firebase per poder enviar notificacions
+      await update(ref(db, 'fcm_tokens/' + token.substring(0,20)), {
+        token: token,
+        ts: Date.now(),
+        ua: navigator.userAgent.substring(0,50)
+      });
+      console.log('Token FCM registrat');
+    }
+  } catch(e) { console.log('Error notificacions:', e); }
+}
+
+// Notificació quan l'app està oberta
+onMessage(messaging, function(payload) {
+  const { title, body } = payload.notification || {};
+  toast('🔔 ' + (title || 'Nova reparació!'));
+  // Mostrar notificació del sistema si l'app és en segon pla
+  if(document.hidden && Notification.permission === 'granted'){
+    new Notification(title || 'Serralleria Les Tries', {
+      body: body || 'Nova reparació entrada',
+      icon: '/icon-192.png'
+    });
+  }
+});
+
+async function enviarNotificacioNouaOrdre(ordre){
+  try {
+    // Enviar via Firebase Database trigger (Cloud Functions)
+    // Com que no tenim Cloud Functions, usem un altre enfocament:
+    // Guardar la notificació pendent a Firebase i el SW la recull
+    await push(ref(db, 'notificacions'), {
+      title: '🔧 Nova reparació #' + ordre.num,
+      body: ordre.client + ' — ' + ordre.descripcio.substring(0, 60),
+      ts: Date.now(),
+      ordre: ordre.num
+    });
+  } catch(e) { console.log('Error enviant notificació:', e); }
+}
+
+// Escoltar notificacions noves a Firebase i mostrar-les
+onValue(ref(db, 'notificacions'), function(snap) {
+  const data = snap.val();
+  if(!data) return;
+  const notifs = Object.values(data);
+  const ultima = notifs[notifs.length - 1];
+  // Mostrar si és nova (menys de 10 segons)
+  if(ultima && (Date.now() - ultima.ts) < 10000 && ultima.ts > (window._ultimaNotif||0)){
+    window._ultimaNotif = ultima.ts;
+    if(Notification.permission === 'granted'){
+      new Notification(ultima.title, {
+        body: ultima.body,
+        icon: '/icon-192.png',
+        vibrate: [200, 100, 200]
+      });
+    }
+  }
+}, { onlyOnce: false });
+
+// Inicialitzar quan la pàgina carrega
+inicialitzarNotificacions();
+
+// ── Cercador del registre ──
+let textCerca = '';
+
+window.cercarRegistre = function(text){
+  textCerca = text.trim().toLowerCase();
+  document.getElementById('cerca-clear').style.display = textCerca ? 'block' : 'none';
+  renderLlista();
+};
+
+window.netejarCerca = function(){
+  document.getElementById('cerca-input').value = '';
+  textCerca = '';
+  document.getElementById('cerca-clear').style.display = 'none';
+  renderLlista();
+};
+
+// toggleUrgent moved to separate script
 </script>
 </body>
 </html>
