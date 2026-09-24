@@ -2,7 +2,7 @@
   "name": "Serralleria Les Tries",
   "short_name": "Les Tries",
   "description": "Sistema de gestión de órdenes de reparación",
-  "start_url": "/",
+  "start_url": "/tries-app1/",
   "display": "standalone",
   "background_color": "#1a1a2e",
   "theme_color": "#1a1a2e",
@@ -20,5 +20,6 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "scope": "/tries-app1/"
 }
