@@ -837,7 +837,8 @@ inicialitzarFormulari();
 let editFbId = null;
 
 
-let fotosActuals = [];
+window.fotosActuals = [];
+let fotosActuals = window.fotosActuals;
 
 function renderFotosPreview(){
   const wrap = document.getElementById('e-fotos-preview');
@@ -850,7 +851,7 @@ function renderFotosPreview(){
 }
 
 window.eliminarFoto = function(idx){
-  fotosActuals.splice(idx, 1);
+  fotosActuals.splice(idx, 1); window.fotosActuals = fotosActuals;
   renderFotosPreview();
 };
 
@@ -859,7 +860,7 @@ window.afegirFotos = function(files){
   Array.from(files).forEach(file => {
     if(fotosActuals.length >= maxFotos){ toast('Màxim '+maxFotos+' fotos per reparació'); return; }
     comprimirImatge(file, (dataUrl) => {
-      fotosActuals.push(dataUrl);
+      fotosActuals.push(dataUrl); window.fotosActuals = fotosActuals;
       renderFotosPreview();
     });
   });
