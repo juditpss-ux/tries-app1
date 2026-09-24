@@ -239,21 +239,7 @@ function veureFoto(img){
   }
 }
 
-function canviarFoto(dir){
-  window._fotoIdx2 = (window._fotoIdx2 || 0) + dir;
-  if(window._fotoIdx2 < 0) window._fotoIdx2 = 0;
-  if(window._fotoIdx2 >= window._fotosLlista2.length) window._fotoIdx2 = window._fotosLlista2.length-1;
-  
-  var modalImg = document.getElementById('foto-modal-img');
-  var prev = document.getElementById('foto-prev');
-  var next = document.getElementById('foto-next');
-  var counter = document.getElementById('foto-counter');
-  
-  if(modalImg) modalImg.src = window._fotosLlista2[window._fotoIdx2];
-  if(counter) counter.textContent = (window._fotoIdx2+1) + ' / ' + window._fotosLlista2.length;
-  if(prev) prev.style.display = window._fotoIdx2 > 0 ? 'block' : 'none';
-  if(next) next.style.display = window._fotoIdx2 < window._fotosLlista2.length-1 ? 'block' : 'none';
-}
+
 function verificarCodi(){
   var v = document.getElementById('login-input').value.trim();
   if(v === 'tries2020'){
