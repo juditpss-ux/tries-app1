@@ -189,10 +189,20 @@ function mostrarFotoModal(){
 }
 
 function canviarFoto(dir){
-  _fotoIndex += dir;
-  if(_fotoIndex < 0) _fotoIndex = 0;
-  if(_fotoIndex >= _fotosLlista.length) _fotoIndex = _fotosLlista.length-1;
-  mostrarFotoModal();
+  window._fotoIdx2 = (window._fotoIdx2 || 0) + dir;
+  var llista = window._fotosLlista2 || [];
+  if(window._fotoIdx2 < 0) window._fotoIdx2 = 0;
+  if(window._fotoIdx2 >= llista.length) window._fotoIdx2 = llista.length - 1;
+  
+  var modalImg = document.getElementById('foto-modal-img');
+  var prev = document.getElementById('foto-prev');
+  var next = document.getElementById('foto-next');
+  var counter = document.getElementById('foto-counter');
+  
+  if(modalImg && llista[window._fotoIdx2]) modalImg.src = llista[window._fotoIdx2];
+  if(counter){ counter.textContent = (window._fotoIdx2+1) + ' / ' + llista.length; counter.style.display = 'block'; }
+  if(prev) prev.style.display = window._fotoIdx2 > 0 ? 'block' : 'none';
+  if(next) next.style.display = window._fotoIdx2 < llista.length-1 ? 'block' : 'none';
 }
 
 function tancarFotoModal(){
