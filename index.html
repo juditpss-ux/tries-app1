@@ -160,10 +160,10 @@ function setUrgentModal(val){
 var _fotoIndex = 0;
 var _fotosLlista = [];
 
-function obrirFotoModal(src){
-  _fotosLlista = (window.fotosActuals && window.fotosActuals.length) ? window.fotosActuals : [src];
-  _fotoIndex = _fotosLlista.indexOf(src);
-  if(_fotoIndex === -1){ _fotosLlista = [src]; _fotoIndex = 0; }
+function obrirFotoModal(idx){
+  _fotosLlista = window.fotosActuals || [];
+  _fotoIndex = idx || 0;
+  if(!_fotosLlista.length) return;
   if(_fotoIndex === -1) _fotoIndex = 0;
   mostrarFotoModal();
   document.getElementById('foto-modal').style.display = 'flex';
@@ -846,7 +846,7 @@ function renderFotosPreview(){
   if(!fotosActuals.length){ wrap.innerHTML = '<span style="font-size:12px;color:var(--text3)">Cap foto afegida encara.</span>'; return; }
   wrap.innerHTML = fotosActuals.map((f, i) => `
     <div style="position:relative;width:70px;height:70px">
-      <img src="${f}" onclick="obrirFotoModal('${f}')" style="width:100%;height:100%;object-fit:cover;border-radius:8px;border:1px solid var(--border);cursor:pointer" title="Clic per ampliar">
+      <img src="${f}" onclick="obrirFotoModal(${i})" style="width:100%;height:100%;object-fit:cover;border-radius:8px;border:1px solid var(--border);cursor:pointer" title="Clic per ampliar">
       <button onclick="eliminarFoto(${i})" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--red);color:#fff;border:none;font-size:12px;cursor:pointer;line-height:1">×</button>
     </div>`).join('');
 }
