@@ -210,13 +210,49 @@ document.addEventListener('click', function(e){
 
 function veureFoto(img){
   var src = img.src;
+  // Recollir totes les fotos del modal actual
+  var totes = Array.from(document.querySelectorAll('#e-fotos-preview img'));
+  window._fotosLlista2 = totes.map(function(i){ return i.src; });
+  window._fotoIdx2 = window._fotosLlista2.indexOf(src);
+  if(window._fotoIdx2 === -1) window._fotoIdx2 = 0;
+  
   var modal = document.getElementById('foto-modal');
   var modalImg = document.getElementById('foto-modal-img');
+  var prev = document.getElementById('foto-prev');
+  var next = document.getElementById('foto-next');
+  var counter = document.getElementById('foto-counter');
+  
   if(modal && modalImg){
     modalImg.src = src;
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
+    
+    if(window._fotosLlista2.length > 1){
+      if(counter) { counter.textContent = (window._fotoIdx2+1) + ' / ' + window._fotosLlista2.length; counter.style.display = 'block'; }
+      if(prev) prev.style.display = window._fotoIdx2 > 0 ? 'block' : 'none';
+      if(next) next.style.display = window._fotoIdx2 < window._fotosLlista2.length-1 ? 'block' : 'none';
+    } else {
+      if(counter) counter.style.display = 'none';
+      if(prev) prev.style.display = 'none';
+      if(next) next.style.display = 'none';
+    }
   }
+}
+
+function canviarFoto(dir){
+  window._fotoIdx2 = (window._fotoIdx2 || 0) + dir;
+  if(window._fotoIdx2 < 0) window._fotoIdx2 = 0;
+  if(window._fotoIdx2 >= window._fotosLlista2.length) window._fotoIdx2 = window._fotosLlista2.length-1;
+  
+  var modalImg = document.getElementById('foto-modal-img');
+  var prev = document.getElementById('foto-prev');
+  var next = document.getElementById('foto-next');
+  var counter = document.getElementById('foto-counter');
+  
+  if(modalImg) modalImg.src = window._fotosLlista2[window._fotoIdx2];
+  if(counter) counter.textContent = (window._fotoIdx2+1) + ' / ' + window._fotosLlista2.length;
+  if(prev) prev.style.display = window._fotoIdx2 > 0 ? 'block' : 'none';
+  if(next) next.style.display = window._fotoIdx2 < window._fotosLlista2.length-1 ? 'block' : 'none';
 }
 function verificarCodi(){
   var v = document.getElementById('login-input').value.trim();
